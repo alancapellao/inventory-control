@@ -17,7 +17,6 @@ class UsuarioController extends Controller
 
     public function login(Request $request)
     {
-        // try {
         $data = $request->only(['email', 'password']);
 
         $email = strtolower($data['email']);
@@ -33,12 +32,7 @@ class UsuarioController extends Controller
                 }
             }
         }
-
         return response()->json(array('erro' => true, 'mensagem' => 'Incorrect email or password.'));
-
-        // } catch (\Throwable $th) {
-        //     return response()->json(array('erro' => true, 'mensagem' => 'Erro ao fazer login: ' . $th->getMessage()));
-        // }
     }
 
     public function register(Request $request)
