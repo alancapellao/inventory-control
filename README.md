@@ -9,5 +9,3 @@ Developed with PHP, jQuery, MySQL and the Laravel framework.
 ![2](https://user-images.githubusercontent.com/110068135/231047540-87f3bf8f-a3e1-476d-b7a4-118e8da7edb1.png)
 
 ![3](https://user-images.githubusercontent.com/110068135/231047544-e2e87ac3-d7b6-41ab-9b78-fa644217a169.png)
-
-![4](https://user-images.githubusercontent.com/110068135/231047547-1b621977-7896-4da0-9db6-c7e07afd90d4.png)
