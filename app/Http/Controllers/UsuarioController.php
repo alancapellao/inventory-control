@@ -2,65 +2,60 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Managers\DatabaseManager;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class UsuarioController extends Controller
 {
-    protected $db;
-
-    public function __construct(DatabaseManager $db)
+    // Página do usuário
+    public function dashboard()
     {
-        $this->db = $db;
+        return view('dashboard');
     }
 
+    // Autenticando login
     public function login(Request $request)
     {
-        $data = $request->only(['email', 'password']);
+        $credentials = $request->only('email', 'password');
 
-        $email = strtolower($data['email']);
-        $password = $data['password'];
-
-        if (isset($email) && !empty($email) && isset($password) && !empty($password)) {
-            $login = $this->db->query("SELECT password FROM usuarios WHERE email = '$email'");
-
-            if (count($login) > 0) {
-                $user = $login[0];
-                if (password_verify($password, $user->password)) {
-                    return response()->json(array('erro' => false, 'mensagem' => 'Login successful!'));
-                }
-            }
+        if (auth()->attempt($credentials)) {
+            return response()->json(['erro' => false]);
         }
-        return response()->json(array('erro' => true, 'mensagem' => 'Incorrect email or password.'));
+        return response()->json(['erro' => true]);
     }
 
     public function register(Request $request)
     {
         $data = $request->only(['name', 'email', 'password']);
 
-        $name = $data['name'];
-        $email = strtolower($data['email']);
-        $password = $data['password'];
-
-        $options = [
-            'cost' => 12,
-        ];
-
-        if (isset($name) && !empty($name) && isset($email) && !empty($email) && isset($password) && !empty($password)) {
-
-            $select = $this->db->query("SELECT email FROM usuarios WHERE email = '$email'");
-
-            if (count($select)) {
-                return response()->json(array('erro' => true, 'mensagem' => 'E-mail already registered.'));
-            } else {
-                $password_criptd = password_hash($password, PASSWORD_BCRYPT, $options);
-
-                $sql = "INSERT INTO usuarios(name, email, password) VALUES('$name', '$email', '$password_criptd')";
-                $this->db->query($sql);
-
-                return response()->json(array('erro' => true, 'mensagem' => 'Registered successfully!'));
-            }
+        // Verificando se campos não estão vazios
+        if (empty($data['name']) || empty($data['email']) || empty($data['password'])) {
+            return response()->json(['erro' => true]);
         }
+
+        // Verificando se usuário já não existe e salvando no banco de dados
+        try {
+            $user = \App\Models\User::create([
+                'name' => $data['name'],
+                'email' => strtolower($data['email']),
+                'password' => Hash::make($data['password']),
+            ]);
+
+            return response()->json(['erro' => false]);
+        } catch (\Exception $e) {
+            return response()->json(['erro' => true]);
+        }
+    }
+
+    // Fechando sessão
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        return response()->json(['erro' => false]);
     }
 }
