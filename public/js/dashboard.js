@@ -86,17 +86,21 @@ $(function () {
         selectedOption = $(this).find("option:selected");
     });
 
-    // Obter dados dos produtos usando método GET e adicioná-los na página HTML
-    $.ajax({
-        url: '/products',
-        method: 'GET',
-        success: function (data) {
-            const produtos = data.produtos;
-            const productsArea = $('.products-column');
+    // Função para obter dados dos produtos usando método GET e adicioná-los na página HTML
+    function getProducts() {
+        $.ajax({
+            url: '/products',
+            method: 'GET',
+            success: function (data) {
+                const produtos = data.produtos;
+                const productsArea = $('.products-column');
 
-            // Criar HTML que exibirá informações do produto
-            produtos.forEach((produto) => {
-                const html = `
+                // Limpar produtos
+                productsArea.empty();
+
+                // Criar HTML que exibirá informações do produto
+                produtos.forEach((produto) => {
+                    const html = `
                 <div class="products-row" data-product-id="${produto.id}">
                         <div class="product-cell image">
                             <span>${produto.item}</span>
@@ -111,11 +115,15 @@ $(function () {
                         <div class="product-cell price"><span class="cell-label">Price:</span>$ ${produto.price}</div>
                     </div>
                 `;
-                // Adicionar HTML criado na área de produtos na página
-                productsArea.append(html);
-            });
-        }
-    });
+                    // Adicionar HTML criado na área de produtos na página
+                    productsArea.append(html);
+                });
+            }
+        });
+    }
+
+    // Renderizando produtos ao carregar página
+    getProducts();
 
     // Obter informações de um produto ao clicar nele na página
     $('.products-column').on('click', '.products-row', function () {
@@ -185,36 +193,9 @@ $(function () {
                 $("#delete").css("display", "none");
                 $(".overlay").hide();
 
-                // Fazer solicitação AJAX para pegar a lista atualizada de produtos e renderizá-la na página
-                $.ajax({
-                    url: '/products',
-                    method: 'GET',
-                    success: function (data) {
-                        const produtos = data.produtos;
-                        const productsArea = $('.products-column');
+                // Renderizando produtos
+                getProducts();
 
-                        productsArea.empty();
-
-                        produtos.forEach((produto) => {
-                            const html = `
-                            <div class="products-row" data-product-id="${produto.id}">
-                                <div class="product-cell image">
-                                    <span>${produto.item}</span>
-                                </div>
-                                <div class="product-cell category"><span class="cell-label">Category:</span>${produto.category}</div>
-                                <div class="product-cell status-cell">
-                                <span class="cell-label">Status:</span>
-                                <span class="status ${produto.status}">${produto.status}</span>
-                                </div>
-                                <div class="product-cell sales"><span class="cell-label">Sales:</span>${produto.sale}</div>
-                                <div class="product-cell stock"><span class="cell-label">Stock:</span>${produto.stock}</div>
-                                <div class="product-cell price"><span class="cell-label">Price:</span>$ ${produto.price}</div>
-                            </div>
-                        `;
-                            productsArea.append(html);
-                        });
-                    }
-                });
                 // Limpar o formulário
                 if (form.length) {
                     form[0].reset();
@@ -235,36 +216,10 @@ $(function () {
                 success: function (data) {
                     $(".box").css("display", "none");
                     $(".overlay").hide();
-                    // Fazer solicitação AJAX para pegar a lista atualizada de produtos e renderizá-la na página
-                    $.ajax({
-                        url: '/products',
-                        method: 'GET',
-                        success: function (data) {
-                            const produtos = data.produtos;
-                            const productsArea = $('.products-column');
 
-                            productsArea.empty();
+                    // Renderizando produtos
+                    getProducts();
 
-                            produtos.forEach((produto) => {
-                                const html = `
-                                <div class="products-row" data-product-id="${produto.id}">
-                                    <div class="product-cell image">
-                                        <span>${produto.item}</span>
-                                    </div>
-                                    <div class="product-cell category"><span class="cell-label">Category:</span>${produto.category}</div>
-                                    <div class="product-cell status-cell">
-                                    <span class="cell-label">Status:</span>
-                                    <span class="status ${produto.status}">${produto.status}</span>
-                                    </div>
-                                    <div class="product-cell sales"><span class="cell-label">Sales:</span>${produto.sale}</div>
-                                    <div class="product-cell stock"><span class="cell-label">Stock:</span>${produto.stock}</div>
-                                    <div class="product-cell price"><span class="cell-label">Price:</span>$ ${produto.price}</div>
-                                </div>
-                            `;
-                                productsArea.append(html);
-                            });
-                        }
-                    });
                     if (form.length) {
                         form[0].reset();
                     }
@@ -286,7 +241,6 @@ $(function () {
             success: function (data) {
                 // Obtendo a lista de produtos retornados pela busca
                 const produtos = data.produtos;
-
                 const productsArea = $('.products-column');
 
                 productsArea.empty();

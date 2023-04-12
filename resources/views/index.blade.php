@@ -17,9 +17,9 @@
             <form id="register-form">
                 @csrf
                 <h1>Create Account</h1>
-                <input type="text" name="name-register" placeholder="Name" id="name-register" />
-                <input type="email" name="email-register" placeholder="Email" id="email-register" />
-                <input type="password" name="password-register" placeholder="Password" id="password-register" />
+                <input type="text" name="name-register" placeholder="Name" id="name-register" required/>
+                <input type="email" name="email-register" placeholder="Email" id="email-register" required/>
+                <input type="password" name="password-register" placeholder="Password" id="password-register" required/>
                 <button id="register">Sign Up</button>
             </form>
         </div>
@@ -27,8 +27,8 @@
             <form id="login-form">
                 @csrf
                 <h1>Sign in</h1>
-                <input type="email" name="email-login" placeholder="Email" id="email-login" />
-                <input type="password" name="password-login" placeholder="Password" id="password-login" />
+                <input type="email" name="email-login" placeholder="Email" id="email-login" required/>
+                <input type="password" name="password-login" placeholder="Password" id="password-login" required/>
                 <button id="login">Sign In</button>
             </form>
         </div>
