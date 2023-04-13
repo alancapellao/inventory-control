@@ -16,20 +16,22 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/index', function () {
-    return view('index');
-})->name('index');
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
 
 Route::post('/login', [UsuarioController::class, 'login']);
 Route::post('/register', [UsuarioController::class, 'register']);
 Route::post('/logout', [UsuarioController::class, 'logout'])->name('logout');
+Route::middleware(['auth'])->get('/index', [UsuarioController::class, 'index'])->name('index');
+Route::middleware(['auth'])->get('/statistics', [UsuarioController::class, 'statistics'])->name('statistics');
 
-Route::middleware(['auth'])->get('/dashboard', [UsuarioController::class, 'dashboard'])->name('dashboard');
+Route::get('/usuario', [UsuarioController::class, 'getUsuario']);
 
+Route::get('/products', [ProductController::class, 'getProducts']);
+Route::get('/product/{productId}', [ProductController::class, 'getProduct']);
+Route::get('/statistic', [ProductController::class, 'getStatistics']);
 Route::post('/save', [ProductController::class, 'save']);
-Route::get('/usuario', [ProductController::class, 'usuario']);
-Route::get('/products', [ProductController::class, 'products']);
-Route::get('/product/{productId}', [ProductController::class, 'product']);
+Route::post('/search', [ProductController::class, 'search']);
 Route::put('/update/{productId}', [ProductController::class, 'update']);
 Route::delete('/delete/{productId}', [ProductController::class, 'delete']);
-Route::post('/search', [ProductController::class, 'search']);

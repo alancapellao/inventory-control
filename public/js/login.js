@@ -39,7 +39,7 @@ $(function () {
                     if (response['erro']) {
                         alert("Invalid email and/or password.");
                     } else {
-                        window.location.href = '/dashboard';
+                        window.location.href = '/index';
                     }
                 }
             });

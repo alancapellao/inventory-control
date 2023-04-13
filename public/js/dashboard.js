@@ -1,4 +1,5 @@
 $(function () {
+
     // Seleciona o formulário e o cria uma váriavel para armazenar o ID
     const form = $("#form-product");
     let productId;
@@ -68,21 +69,11 @@ $(function () {
         });
     });
 
-    // Exibe o nome do usuário logado na conta
-    $.ajax({
-        url: '/usuario',
-        method: 'GET',
-        success: function (data) {
-            $(".account-info-name").html(data['name']);
-        }
-    });
-
     // Função para obter dados dos produtos usando método GET e adicioná-los na página HTML
     function getProducts(produto) {
 
         let url, method;
 
-        // Definindo se é pra renderizar todos os produtos ou produtos específicos
         if (produto !== 0 && produto !== undefined && produto !== null) {
             url = `/search`;
             method = 'POST';
@@ -99,10 +90,8 @@ $(function () {
                 const produtos = data.produtos;
                 const productsArea = $('.products-column');
 
-                // Limpar produtos
                 productsArea.empty();
 
-                // Criar HTML que exibirá informações do produto
                 produtos.forEach((produto) => {
                     const html = `
                 <div class="products-row" data-product-id="${produto.id}">
@@ -119,7 +108,6 @@ $(function () {
                         <div class="product-cell price"><span class="cell-label">Price:</span>$ ${produto.price}</div>
                     </div>
                 `;
-                    // Adicionar HTML criado na área de produtos na página
                     productsArea.append(html);
                 });
             }
@@ -131,10 +119,9 @@ $(function () {
 
     // Obter informações de um produto ao clicar nele na página
     $('.products-column').on('click', '.products-row', function () {
-        // Obter o ID do produto
+
         productId = $(this).data('product-id');
 
-        // Fazer solicitação AJAX para obter informações do produto
         $.ajax({
             url: `/product/${productId}`,
             method: 'GET',
@@ -142,7 +129,6 @@ $(function () {
 
                 const produto = data.produto;
 
-                // Preencher o formulário com as informações do produto
                 $('#item').val(produto.item);
                 $('#category').val(produto.category);
                 if (produto.status === "active") {
@@ -166,7 +152,6 @@ $(function () {
     $("#submit").on("click", function (e) {
         e.preventDefault();
 
-        // Definir a URL e o método para enviar a solicitação AJAX
         let url, method;
 
         if (productId !== 0 && productId !== undefined && productId !== null) {
@@ -177,7 +162,6 @@ $(function () {
             method = 'POST';
         }
 
-        // Obter valor que está selecionado na categoria
         const selectedOption = $("#category option:selected");
 
         $.ajax({
@@ -192,15 +176,12 @@ $(function () {
                 price: $("#price").val()
             },
             success: function (retorno) {
-                // Esconder formulário e botão de delete
                 $(".box").css("display", "none");
                 $("#delete").css("display", "none");
                 $(".overlay").hide();
 
-                // Renderizando produtos
                 getProducts(0);
 
-                // Limpar o formulário
                 if (form.length) {
                     form[0].reset();
                 }
@@ -210,11 +191,10 @@ $(function () {
 
     // Excluindo um produto
     $('#delete').on('click', function () {
-        // Confirmar com o usuário antes de excluir
+
         const confirmDelete = confirm('Are you sure you want to delete this product?');
 
         if (confirmDelete) {
-            // Fazer solicitação AJAX para excluir o produto
             $.ajax({
                 url: `/delete/${productId}`,
                 method: 'DELETE',
@@ -222,14 +202,12 @@ $(function () {
                     $(".box").css("display", "none");
                     $(".overlay").hide();
 
-                    // Renderizando produtos
                     getProducts(0);
 
                     if (form.length) {
                         form[0].reset();
                     }
 
-                    //Reinicia váriavel de ID
                     productId = 0;
                 }
             });
@@ -240,12 +218,23 @@ $(function () {
     $('.search-bar').on('keyup', function () {
         const searchTerm = $(this).val();
 
-        // Mandando search para função getProducts
         getProducts(searchTerm);
     });
 
     //Escondendo e mostrando botão de logout
     $('.account-info-more').on('click', function () {
         $('.account-info-dropdown').toggleClass('show');
+    });
+
+    var currentUrl = window.location.pathname;
+
+    // Adiciona um manipulador de eventos ao clicar em um item da lista
+    $(".sidebar-list-item a").filter(function () {
+        return $(this).attr("href") === currentUrl;
+    }).closest(".sidebar-list-item").addClass("active");
+
+    $(".sidebar-list-item a").click(function () {
+        $(".sidebar-list-item.active").removeClass("active");
+        $(this).closest(".sidebar-list-item").addClass("active");
     });
 });

@@ -10,18 +10,17 @@ use PhpParser\Node\Stmt\TryCatch;
 
 class ProductController extends Controller
 {
+    // Função para acessar o banco e salvar produto
     public function save(Request $request)
     {
         $data = $request->only(["item", "category", "status", "sale", "stock", "price"]);
 
-        //Vericar se campos estão preenchidos
         if (empty($data['item']) || empty($data['category']) || empty($data['status']) || empty($data['sale']) || empty($data['stock']) || empty($data['price'])) {
             return response()->json(['erro' => true, 'mensagem' => 'Campos não preenchidos.']);
         }
-        //ID do usúario logado
+
         $usuario_id = Auth::id();
 
-        // Salvar no banco
         try {
             $product = \App\Models\Product::create([
                 'item' => $data['item'],
@@ -38,17 +37,9 @@ class ProductController extends Controller
         }
     }
 
-    public function usuario()
+    // Função para acessar o banco e buscar produto
+    public function getProducts()
     {
-        // Buscar nome do usuário logado
-        $usuario = Auth::user();
-        $name_user = $usuario->name;
-        return response()->json(['erro' => false, 'name' => $name_user]);
-    }
-
-    public function products()
-    {
-        // Buscar todos os produtos
         $userId = auth()->user()->id;
         $products = \App\Models\Product::where('usuario_id', $userId)
             ->select(['id', 'item', 'category', 'status', 'sale', 'stock', 'price'])
@@ -56,9 +47,9 @@ class ProductController extends Controller
         return response()->json(['erro' => false, 'produtos' => $products]);
     }
 
-    public function product($productId)
+    // Função para acessar o banco e buscar produto específico
+    public function getProduct($productId)
     {
-        // Retornar produto do usuário clicado
         $userId = auth()->user()->id;
         $product = \App\Models\Product::where('usuario_id', $userId)
             ->where('id', $productId)
@@ -66,13 +57,13 @@ class ProductController extends Controller
         return response()->json(['erro' => false, 'produto' => $product]);
     }
 
+    // Função para atualizar registros no banco
     public function update($productId, Request $request)
     {
         $data = $request->only(["item", "category", "status", "sale", "stock", "price"]);
 
         try {
             $product = \App\Models\Product::find($productId);
-            // Atualizando os campos do produto
             $product->item = $request->input('item');
             $product->category = $request->input('category');
             $product->status = $request->input('status');
@@ -80,7 +71,6 @@ class ProductController extends Controller
             $product->stock = $request->input('stock');
             $product->price = $request->input('price');
 
-            // Salvar o produto atualizado no banco de dados
             $product->save();
 
             return response()->json(['erro' => false]);
@@ -89,9 +79,9 @@ class ProductController extends Controller
         }
     }
 
+    // Função para deletar registros no banco
     public function delete($productId)
     {
-        // Deletando produto com ID que vem da requisição
         $produto = \App\Models\Product::find($productId);
 
         if ($produto) {
@@ -102,6 +92,7 @@ class ProductController extends Controller
         }
     }
 
+    // Função de pesquisa de produtos no banco
     public function search(Request $request)
     {
         $data = $request->only('search');
@@ -113,5 +104,33 @@ class ProductController extends Controller
             ->orWhere('price', 'LIKE', "%{$data['search']}%")
             ->get();
         return response()->json(['erro' => false, 'produtos' => $products]);
+    }
+
+    // Função para obter dados dos produtos do banco
+    public function getStatistics()
+    {
+        $usuario = Auth::user();
+
+        $saleCategory = \App\Models\Product::select('category', DB::raw('COALESCE(SUM(sale), 0) as sales'))
+            ->where('usuario_id', $usuario->id)
+            ->groupBy('category')
+            ->pluck('sales', 'category')
+            ->toArray();
+
+        $stockCategory = \App\Models\Product::select('category', DB::raw('COALESCE(SUM(stock), 0) as stocks'))
+            ->where('usuario_id', $usuario->id)
+            ->groupBy('category')
+            ->pluck('stocks', 'category')
+            ->toArray();
+
+        $activeProducts = \App\Models\Product::where('usuario_id', $usuario->id)
+            ->where('status', "active")
+            ->count();
+
+        $inactiveProducts = \App\Models\Product::where('usuario_id', $usuario->id)
+            ->where('status', "disabled")
+            ->count();
+
+        return response()->json(['erro' => false, 'sale' => $saleCategory, 'stock' => $stockCategory, 'active' => $activeProducts, 'disabled' => $inactiveProducts]);
     }
 }
