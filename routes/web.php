@@ -1,9 +1,8 @@
 <?php
 
-use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,13 +19,12 @@ Route::get('/login', function () {
     return view('login');
 })->name('login');
 
-Route::post('/login', [UsuarioController::class, 'login']);
-Route::post('/register', [UsuarioController::class, 'register']);
-Route::post('/logout', [UsuarioController::class, 'logout'])->name('logout');
-Route::middleware(['auth'])->get('/index', [UsuarioController::class, 'index'])->name('index');
-Route::middleware(['auth'])->get('/statistics', [UsuarioController::class, 'statistics'])->name('statistics');
-
-Route::get('/usuario', [UsuarioController::class, 'getUsuario']);
+Route::post('/login', [UserController::class, 'login']);
+Route::post('/register', [UserController::class, 'register']);
+Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+Route::middleware(['auth'])->get('/index', [UserController::class, 'index'])->name('index');
+Route::middleware(['auth'])->get('/statistics', [UserController::class, 'statistics'])->name('statistics');
+Route::get('/usuario', [UserController::class, 'getUsuario']);
 
 Route::get('/products', [ProductController::class, 'getProducts']);
 Route::get('/product/{productId}', [ProductController::class, 'getProduct']);

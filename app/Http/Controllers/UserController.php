@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Managers\DatabaseManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
-class UsuarioController extends Controller
+class UserController extends Controller
 {
     // Página do usuário
     public function index()
@@ -30,8 +27,8 @@ class UsuarioController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (auth()->attempt($credentials)) {
-            $usuario = Auth::user()->name;
-            session(['usuario' => $usuario]);
+            $user = Auth::user()->name;
+            session(['user' => $user]);
             return response()->json(['erro' => false]);
         }
         return response()->json(['erro' => true]);
@@ -61,7 +58,7 @@ class UsuarioController extends Controller
     // Fechando sessão
     public function logout(Request $request)
     {
-        $request->session()->forget('usuario');
+        $request->session()->forget('user');
         Auth::logout();
         return response()->json(['erro' => false]);
     }

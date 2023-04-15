@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use PhpParser\Node\Stmt\TryCatch;
 
 class ProductController extends Controller
 {
@@ -19,7 +18,7 @@ class ProductController extends Controller
             return response()->json(['erro' => true, 'mensagem' => 'Campos não preenchidos.']);
         }
 
-        $usuario_id = Auth::id();
+        $user = Auth::user()->id;
 
         try {
             $product = \App\Models\Product::create([
@@ -29,7 +28,7 @@ class ProductController extends Controller
                 'sale' => $data['sale'],
                 'stock' => $data['stock'],
                 'price' => $data['price'],
-                'usuario_id' => $usuario_id
+                'user_id' => $user
             ]);
             return response()->json(['erro' => false]);
         } catch (\Exception $e) {
@@ -37,11 +36,12 @@ class ProductController extends Controller
         }
     }
 
-    // Função para acessar o banco e buscar produto
+    // Função para acessar o banco e buscar produtos
     public function getProducts()
     {
-        $userId = auth()->user()->id;
-        $products = \App\Models\Product::where('usuario_id', $userId)
+        $user = Auth::user()->id;
+
+        $products = \App\Models\Product::where('user_id', $user)
             ->select(['id', 'item', 'category', 'status', 'sale', 'stock', 'price'])
             ->get();
         return response()->json(['erro' => false, 'produtos' => $products]);
@@ -50,8 +50,9 @@ class ProductController extends Controller
     // Função para acessar o banco e buscar produto específico
     public function getProduct($productId)
     {
-        $userId = auth()->user()->id;
-        $product = \App\Models\Product::where('usuario_id', $userId)
+        $user = Auth::user()->id;
+
+        $product = \App\Models\Product::where('user_id', $user)
             ->where('id', $productId)
             ->first();
         return response()->json(['erro' => false, 'produto' => $product]);
@@ -70,7 +71,6 @@ class ProductController extends Controller
             $product->sale = $request->input('sale');
             $product->stock = $request->input('stock');
             $product->price = $request->input('price');
-
             $product->save();
 
             return response()->json(['erro' => false]);
@@ -96,12 +96,18 @@ class ProductController extends Controller
     public function search(Request $request)
     {
         $data = $request->only('search');
-        $products = \App\Models\Product::where('item', 'LIKE', "%{$data['search']}%")
-            ->orWhere('category', 'LIKE', "%{$data['search']}%")
-            ->orWhere('status', 'LIKE', "%{$data['search']}%")
-            ->orWhere('sale', 'LIKE', "%{$data['search']}%")
-            ->orWhere('stock', 'LIKE', "%{$data['search']}%")
-            ->orWhere('price', 'LIKE', "%{$data['search']}%")
+
+        $user = Auth::user()->id;
+
+        $products = \App\Models\Product::where('user_id', $user)
+            ->where(function ($query) use ($data) {
+                $query->orWhere('item', 'LIKE', "%{$data['search']}%")
+                    ->orWhere('category', 'LIKE', "%{$data['search']}%")
+                    ->orWhere('status', 'LIKE', "%{$data['search']}%")
+                    ->orWhere('sale', 'LIKE', "%{$data['search']}%")
+                    ->orWhere('stock', 'LIKE', "%{$data['search']}%")
+                    ->orWhere('price', 'LIKE', "%{$data['search']}%");
+            })
             ->get();
         return response()->json(['erro' => false, 'produtos' => $products]);
     }
@@ -109,27 +115,28 @@ class ProductController extends Controller
     // Função para obter dados dos produtos do banco
     public function getStatistics()
     {
-        $usuario = Auth::user();
+        $user = Auth::user()->id; // ID do usuário logado
 
         $saleCategory = \App\Models\Product::select('category', DB::raw('COALESCE(SUM(sale), 0) as sales'))
-            ->where('usuario_id', $usuario->id)
+            ->where('user_id', $user) // Filtra apenas os produtos vendidos pelo usuário logado
             ->groupBy('category')
             ->pluck('sales', 'category')
             ->toArray();
 
         $stockCategory = \App\Models\Product::select('category', DB::raw('COALESCE(SUM(stock), 0) as stocks'))
-            ->where('usuario_id', $usuario->id)
+            ->where('user_id', $user) // Filtra apenas os produtos vendidos pelo usuário logado
             ->groupBy('category')
             ->pluck('stocks', 'category')
             ->toArray();
 
-        $activeProducts = \App\Models\Product::where('usuario_id', $usuario->id)
+        $activeProducts = \App\Models\Product::where('user_id', $user)
             ->where('status', "active")
             ->count();
 
-        $inactiveProducts = \App\Models\Product::where('usuario_id', $usuario->id)
+        $inactiveProducts = \App\Models\Product::where('user_id', $user)
             ->where('status', "disabled")
             ->count();
+
 
         return response()->json(['erro' => false, 'sale' => $saleCategory, 'stock' => $stockCategory, 'active' => $activeProducts, 'disabled' => $inactiveProducts]);
     }
