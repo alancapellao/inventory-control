@@ -8,6 +8,8 @@ Developed with PHP, jQuery, MySQL and the Laravel framework.
 
 ![2](https://user-images.githubusercontent.com/110068135/231047540-87f3bf8f-a3e1-476d-b7a4-118e8da7edb1.png)
 
-![3](https://user-images.githubusercontent.com/110068135/231047544-e2e87ac3-d7b6-41ab-9b78-fa644217a169.png)
+![22](https://user-images.githubusercontent.com/110068135/231873983-c33c3ae5-7c51-4ef3-a59d-748782ed9b86.png)
 
-![Screenshot_1](https://user-images.githubusercontent.com/110068135/231862681-0316c3f5-4387-4d7e-9c42-da645c6bfd02.png)
+![33](https://user-images.githubusercontent.com/110068135/231873986-2983b7f9-9cbf-496d-b14e-dd231de1b7c9.png)
+
+![11](https://user-images.githubusercontent.com/110068135/231873988-c0781d20-5c45-411c-b387-6b796b2ea368.png)
