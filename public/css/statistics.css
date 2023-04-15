@@ -138,6 +138,10 @@ br {
     display: none;
 }
 
+.chart {
+    display: none;
+}
+
 @media (max-width: 576px) {
     .col-sm-6 {
         flex: 0 0 100%;

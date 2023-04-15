@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Product;
 
 class ProductController extends Controller
 {
@@ -21,7 +22,7 @@ class ProductController extends Controller
         $user = Auth::user()->id;
 
         try {
-            $product = \App\Models\Product::create([
+            $product = Product::create([
                 'item' => $data['item'],
                 'category' => $data['category'],
                 'status' => $data['status'],
@@ -41,7 +42,7 @@ class ProductController extends Controller
     {
         $user = Auth::user()->id;
 
-        $products = \App\Models\Product::where('user_id', $user)
+        $products = Product::where('user_id', $user)
             ->select(['id', 'item', 'category', 'status', 'sale', 'stock', 'price'])
             ->get();
         return response()->json(['erro' => false, 'produtos' => $products]);
@@ -52,7 +53,7 @@ class ProductController extends Controller
     {
         $user = Auth::user()->id;
 
-        $product = \App\Models\Product::where('user_id', $user)
+        $product = Product::where('user_id', $user)
             ->where('id', $productId)
             ->first();
         return response()->json(['erro' => false, 'produto' => $product]);
@@ -64,7 +65,7 @@ class ProductController extends Controller
         $data = $request->only(["item", "category", "status", "sale", "stock", "price"]);
 
         try {
-            $product = \App\Models\Product::find($productId);
+            $product = Product::find($productId);
             $product->item = $request->input('item');
             $product->category = $request->input('category');
             $product->status = $request->input('status');
@@ -82,7 +83,7 @@ class ProductController extends Controller
     // Função para deletar registros no banco
     public function delete($productId)
     {
-        $produto = \App\Models\Product::find($productId);
+        $produto = Product::find($productId);
 
         if ($produto) {
             $produto->delete();
@@ -99,7 +100,7 @@ class ProductController extends Controller
 
         $user = Auth::user()->id;
 
-        $products = \App\Models\Product::where('user_id', $user)
+        $products = Product::where('user_id', $user)
             ->where(function ($query) use ($data) {
                 $query->orWhere('item', 'LIKE', "%{$data['search']}%")
                     ->orWhere('category', 'LIKE', "%{$data['search']}%")
@@ -117,23 +118,23 @@ class ProductController extends Controller
     {
         $user = Auth::user()->id; // ID do usuário logado
 
-        $saleCategory = \App\Models\Product::select('category', DB::raw('COALESCE(SUM(sale), 0) as sales'))
+        $saleCategory = Product::select('category', DB::raw('COALESCE(SUM(sale), 0) as sales'))
             ->where('user_id', $user) // Filtra apenas os produtos vendidos pelo usuário logado
             ->groupBy('category')
             ->pluck('sales', 'category')
             ->toArray();
 
-        $stockCategory = \App\Models\Product::select('category', DB::raw('COALESCE(SUM(stock), 0) as stocks'))
+        $stockCategory = Product::select('category', DB::raw('COALESCE(SUM(stock), 0) as stocks'))
             ->where('user_id', $user) // Filtra apenas os produtos vendidos pelo usuário logado
             ->groupBy('category')
             ->pluck('stocks', 'category')
             ->toArray();
 
-        $activeProducts = \App\Models\Product::where('user_id', $user)
+        $activeProducts = Product::where('user_id', $user)
             ->where('status', "active")
             ->count();
 
-        $inactiveProducts = \App\Models\Product::where('user_id', $user)
+        $inactiveProducts = Product::where('user_id', $user)
             ->where('status', "disabled")
             ->count();
 
