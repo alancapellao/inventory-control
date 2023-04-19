@@ -22,23 +22,24 @@ $(function () {
     $("#login-form #login").on("click", function (e) {
         e.preventDefault();
 
-        var campoEmail = $("#login-form #email-login").val();
-        var campoPassword = $("#login-form #password-login").val();
+        var email = $("#login-form #email-login").val();
+        var password = $("#login-form #password-login").val();
 
-        if (campoEmail.trim() == "" || campoPassword.trim() == "") {
+        if (email.trim() == "" || password.trim() == "") {
             alert("Fill in the fields.");
         } else {
             $.ajax({
                 url: '/login',
                 method: 'POST',
                 data: {
-                    email: campoEmail,
-                    password: campoPassword
+                    email,
+                    password
                 },
-                success: function (response) {
-                    if (response['erro']) {
-                        alert("Invalid email and/or password.");
+                success: function (data) {
+                    if (data['error']) {
+                        alert(data['message']);
                     } else {
+                        alert(data['message']);
                         window.location.href = '/index';
                     }
                 }
@@ -50,29 +51,33 @@ $(function () {
     $("#register-form #register").on("click", function (e) {
         e.preventDefault();
 
-        var campoName = $("#register-form #name-register").val();
-        var campoEmail = $("#register-form #email-register").val();
-        var campoPassword = $("#register-form #password-register").val();
+        var name = $("#register-form #name-register").val();
+        var email = $("#register-form #email-register").val();
+        var password = $("#register-form #password-register").val();
 
-        if (campoName.trim() == "" || campoEmail.trim() == "" || campoPassword.trim() == "") {
+        if (name.trim() == "" || email.trim() == "") {
             alert("Fill in the fields.");
         } else {
-            $.ajax({
-                url: '/register',
-                method: 'POST',
-                data: {
-                    name: campoName,
-                    email: campoEmail,
-                    password: campoPassword
-                },
-                success: function (response) {
-                    if (response['erro']) {
-                        alert("This user already exists.");
-                    } else {
-                        alert("Successfully registered.");
+            if (password.length !== 8) {
+                alert("Password must contain 8 characters.");
+            } else {
+                $.ajax({
+                    url: '/register',
+                    method: 'POST',
+                    data: {
+                        name,
+                        email,
+                        password
+                    },
+                    success: function (data) {
+                        if (data['error']) {
+                            alert(data['message']);
+                        } else {
+                            alert(data['message']);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     });
 });

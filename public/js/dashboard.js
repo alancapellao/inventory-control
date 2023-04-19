@@ -162,31 +162,47 @@ $(function () {
             method = 'POST';
         }
 
-        const selectedOption = $("#category option:selected");
+        const item = $("#item").val();
+        const category = $("#category option:selected").val();
+        const status = $('input[name="status"]:checked').val();
+        const sale = $("#sale").val();
+        const stock = $("#stock").val();
+        const price = $("#price").val();
 
-        $.ajax({
-            type: method,
-            url: url,
-            data: {
-                item: $("#item").val(),
-                category: selectedOption.text(),
-                status: $('input[name="status"]:checked').val(),
-                sale: $("#sale").val(),
-                stock: $("#stock").val(),
-                price: $("#price").val()
-            },
-            success: function (retorno) {
-                $(".box").css("display", "none");
-                $("#delete").css("display", "none");
-                $(".overlay").hide();
+        if (item.trim() == "" || category == "" || status == undefined || sale.trim() == "" || stock.trim() == "" || price.trim() == "") {
+            alert("Fill in the fields.");
+        } else {
+            $.ajax({
+                type: method,
+                url: url,
+                data: {
+                    item,
+                    category,
+                    status,
+                    sale,
+                    stock,
+                    price
+                },
+                success: function (data) {
 
-                getProducts(0);
+                    if (data['error']) {
+                        alert(data['message']);
+                    } else {
+                        alert(data['message']);
 
-                if (form.length) {
-                    form[0].reset();
+                        $(".box").css("display", "none");
+                        $("#delete").css("display", "none");
+                        $(".overlay").hide();
+
+                        getProducts(0);
+
+                        if (form.length) {
+                            form[0].reset();
+                        }
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
     // Excluindo um produto
@@ -199,16 +215,21 @@ $(function () {
                 url: `/delete/${productId}`,
                 method: 'DELETE',
                 success: function (data) {
-                    $(".box").css("display", "none");
-                    $(".overlay").hide();
 
-                    getProducts(0);
+                    if (data['error']) {
+                        alert(data['message']);
+                    } else {
+                        alert(data['message']);
 
-                    if (form.length) {
-                        form[0].reset();
+                        $(".box").css("display", "none");
+                        $(".overlay").hide();
+
+                        getProducts(0);
+
+                        if (form.length) {
+                            form[0].reset();
+                        }
                     }
-
-                    productId = 0;
                 }
             });
         }
@@ -228,7 +249,7 @@ $(function () {
 
     var currentUrl = window.location.pathname;
 
-    // Adiciona um manipulador de eventos ao clicar em um item da lista
+    // Adiciona um manipulador de eventos ao clicar em alguma das páginas
     $(".sidebar-list-item a").filter(function () {
         return $(this).attr("href") === currentUrl;
     }).closest(".sidebar-list-item").addClass("active");

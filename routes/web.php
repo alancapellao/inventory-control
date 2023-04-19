@@ -17,14 +17,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/login', function () {
     return view('login');
-})->name('login');
+});
 
+Route::get('/usuario', [UserController::class, 'getUsuario']);
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/register', [UserController::class, 'register']);
-Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+Route::post('/logout', [UserController::class, 'logout']);
 Route::middleware(['auth'])->get('/index', [UserController::class, 'index'])->name('index');
 Route::middleware(['auth'])->get('/statistics', [UserController::class, 'statistics'])->name('statistics');
-Route::get('/usuario', [UserController::class, 'getUsuario']);
 
 Route::get('/products', [ProductController::class, 'getProducts']);
 Route::get('/product/{productId}', [ProductController::class, 'getProduct']);

@@ -15,10 +15,6 @@ class ProductController extends Controller
     {
         $data = $request->only(["item", "category", "status", "sale", "stock", "price"]);
 
-        if (empty($data['item']) || empty($data['category']) || empty($data['status']) || empty($data['sale']) || empty($data['stock']) || empty($data['price'])) {
-            return response()->json(['erro' => true, 'mensagem' => 'Campos não preenchidos.']);
-        }
-
         $user = Auth::user()->id;
 
         try {
@@ -31,9 +27,10 @@ class ProductController extends Controller
                 'price' => $data['price'],
                 'user_id' => $user
             ]);
-            return response()->json(['erro' => false]);
+
+            return response()->json(['error' => false, 'message' => 'Successfully registered product.']);
         } catch (\Exception $e) {
-            return response()->json(['erro' => true]);
+            return response()->json(['error' => true, 'message' => 'Error saving product.']);
         }
     }
 
@@ -45,7 +42,8 @@ class ProductController extends Controller
         $products = Product::where('user_id', $user)
             ->select(['id', 'item', 'category', 'status', 'sale', 'stock', 'price'])
             ->get();
-        return response()->json(['erro' => false, 'produtos' => $products]);
+
+        return response()->json(['produtos' => $products]);
     }
 
     // Função para acessar o banco e buscar produto específico
@@ -56,7 +54,8 @@ class ProductController extends Controller
         $product = Product::where('user_id', $user)
             ->where('id', $productId)
             ->first();
-        return response()->json(['erro' => false, 'produto' => $product]);
+
+        return response()->json(['produto' => $product]);
     }
 
     // Função para atualizar registros no banco
@@ -74,9 +73,9 @@ class ProductController extends Controller
             $product->price = $request->input('price');
             $product->save();
 
-            return response()->json(['erro' => false]);
+            return response()->json(['error' => false, 'message' => 'Product updated successfully.']);
         } catch (\Exception $e) {
-            return response()->json(['erro' => true]);
+            return response()->json(['error' => true, 'message' => 'Error updating product.']);
         }
     }
 
@@ -87,9 +86,10 @@ class ProductController extends Controller
 
         if ($produto) {
             $produto->delete();
-            return response()->json(['erro' => false]);
+
+            return response()->json(['error' => false, 'message' => 'Successfully deleted product.']);
         } else {
-            return response()->json(['erro' => true]);
+            return response()->json(['error' => true, 'message' => 'Error deleting product.']);
         }
     }
 
@@ -110,7 +110,8 @@ class ProductController extends Controller
                     ->orWhere('price', 'LIKE', "%{$data['search']}%");
             })
             ->get();
-        return response()->json(['erro' => false, 'produtos' => $products]);
+
+        return response()->json(['produtos' => $products]);
     }
 
     // Função para obter dados dos produtos do banco
@@ -138,7 +139,6 @@ class ProductController extends Controller
             ->where('status', "disabled")
             ->count();
 
-
-        return response()->json(['erro' => false, 'sale' => $saleCategory, 'stock' => $stockCategory, 'active' => $activeProducts, 'disabled' => $inactiveProducts]);
+        return response()->json(['sale' => $saleCategory, 'stock' => $stockCategory, 'active' => $activeProducts, 'disabled' => $inactiveProducts]);
     }
 }

@@ -18,8 +18,8 @@ $(function () {
             } else {
                 $(".chart").css("display", "block");
 
-                var ctx4 = $("#bar-chart").get(0).getContext("2d");
-                var myChart4 = new Chart(ctx4, {
+                var ctx1 = $("#bar-chart").get(0).getContext("2d");
+                var myChart1 = new Chart(ctx1, {
                     type: "bar",
                     data: {
                         labels: ["Furniture", "Decoration", "Kitchen", "Bathroom"],
@@ -45,8 +45,8 @@ $(function () {
                 });
 
 
-                var ctx5 = $("#pie-chart").get(0).getContext("2d");
-                var myChart5 = new Chart(ctx5, {
+                var ctx2 = $("#pie-chart").get(0).getContext("2d");
+                var myChart2 = new Chart(ctx2, {
                     type: "pie",
                     data: {
                         labels: ["Furniture", "Decoration", "Kitchen", "Bathroom"],

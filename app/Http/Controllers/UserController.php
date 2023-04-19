@@ -30,9 +30,10 @@ class UserController extends Controller
         if (auth()->attempt($credentials)) {
             $user = Auth::user()->name;
             session(['user' => $user]);
-            return response()->json(['erro' => false]);
+
+            return response()->json(['error' => false, 'message' => 'Login successful.']);
         }
-        return response()->json(['erro' => true]);
+        return response()->json(['error' => true, 'message' => 'Invalid email or password.']);
     }
 
     // Função de registro e criptografia
@@ -40,19 +41,16 @@ class UserController extends Controller
     {
         $data = $request->only(['name', 'email', 'password']);
 
-        if (empty($data['name']) || empty($data['email']) || empty($data['password'])) {
-            return response()->json(['erro' => true]);
-        }
-
         try {
             $user = User::create([
                 'name' => $data['name'],
                 'email' => strtolower($data['email']),
                 'password' => Hash::make($data['password']),
             ]);
-            return response()->json(['erro' => false]);
+
+            return response()->json(['error' => false, 'message' => 'Successfully registered.']);
         } catch (\Exception $e) {
-            return response()->json(['erro' => true]);
+            return response()->json(['error' => true, 'message' => 'Email already exists.']);
         }
     }
 
@@ -61,6 +59,7 @@ class UserController extends Controller
     {
         $request->session()->forget('user');
         Auth::logout();
-        return response()->json(['erro' => false]);
+
+        return response()->json(['error' => false, 'message' => 'Logout successfully.']);
     }
 }
