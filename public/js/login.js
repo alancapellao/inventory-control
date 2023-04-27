@@ -29,8 +29,8 @@ $(function () {
             alert("Fill in the fields.");
         } else {
             $.ajax({
-                url: '/login',
-                method: 'POST',
+                url: "/login",
+                method: "POST",
                 data: {
                     email,
                     password
@@ -62,8 +62,8 @@ $(function () {
                 alert("Password must contain 8 characters.");
             } else {
                 $.ajax({
-                    url: '/register',
-                    method: 'POST',
+                    url: "/register",
+                    method: "POST",
                     data: {
                         name,
                         email,

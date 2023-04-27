@@ -61,8 +61,8 @@ $(function () {
         e.preventDefault();
 
         $.ajax({
-            type: "POST",
             url: "/logout",
+            method: "POST",
             success: function (e) {
                 window.location.href = "/index";
             }
@@ -75,11 +75,11 @@ $(function () {
         let url, method;
 
         if (produto !== 0 && produto !== undefined && produto !== null) {
-            url = `/search`;
-            method = 'POST';
+            url = "/search";
+            method = "POST";
         } else {
-            url = '/products';
-            method = 'GET';
+            url = "/products";
+            method = "GET";
         }
 
         $.ajax({
@@ -124,7 +124,7 @@ $(function () {
 
         $.ajax({
             url: `/product/${productId}`,
-            method: 'GET',
+            method: "GET",
             success: function (data) {
 
                 const produto = data.produto;
@@ -156,10 +156,10 @@ $(function () {
 
         if (productId !== 0 && productId !== undefined && productId !== null) {
             url = `/update/${productId}`;
-            method = 'PUT';
+            method = "PUT";
         } else {
-            url = '/save';
-            method = 'POST';
+            url = "/save";
+            method = "POST";
         }
 
         const item = $("#item").val();
@@ -173,8 +173,8 @@ $(function () {
             alert("Fill in the fields.");
         } else {
             $.ajax({
-                type: method,
                 url: url,
+                method: method,
                 data: {
                     item,
                     category,
@@ -213,7 +213,7 @@ $(function () {
         if (confirmDelete) {
             $.ajax({
                 url: `/delete/${productId}`,
-                method: 'DELETE',
+                method: "DELETE",
                 success: function (data) {
 
                     if (data['error']) {

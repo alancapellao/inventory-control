@@ -2,8 +2,8 @@ $(function () {
 
     // Função para receber dados dos produtos e gerar gráficos
     $.ajax({
-        url: '/statistic',
-        method: 'GET',
+        url: "/statistic",
+        method: "GET",
         success: function (data) {
             const sales = (parseInt(data.sale["Furniture"] || 0) + parseInt(data.sale["Decoration"] || 0) + parseInt(data.sale["Kitchen"] || 0) + parseInt(data.sale["Bathroom"] || 0));
             const stocks = (parseInt(data.stock["Furniture"] || 0) + parseInt(data.stock["Decoration"] || 0) + parseInt(data.stock["Kitchen"] || 0) + parseInt(data.stock["Bathroom"] || 0));
